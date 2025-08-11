@@ -9,7 +9,7 @@ import (
 	"github.com/kaelbroersma/gator/internal/database"
 )
 
-func handleAddFeed(s *state, cmd Command) error {
+func handleAddFeed(s *state, cmd Command, user database.User) error {
 	if len(cmd.Args) < 1 {
 		return fmt.Errorf("<args1> must be URL followed by <args2> name")
 	}
@@ -20,10 +20,6 @@ func handleAddFeed(s *state, cmd Command) error {
 	feedURL := cmd.Args[1]
 	feedName := cmd.Args[0]
 	ctx := context.Background()
-	user, err := s.db.GetUser(ctx, s.cfg.CurrentUser)
-	if err != nil {
-		return err
-	}
 
 	feed, err := s.db.CreateFeed(ctx, database.CreateFeedParams{
 		ID:        uuid.New(),
@@ -38,11 +34,11 @@ func handleAddFeed(s *state, cmd Command) error {
 	}
 
 	_, err = s.db.CreateFeedFollow(ctx, database.CreateFeedFollowParams{
-		ID: uuid.New(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		UserID: user.ID,
-		FeedID: feed.ID,
+		UserID:    user.ID,
+		FeedID:    feed.ID,
 	})
 	if err != nil {
 		return fmt.Errorf("Error creating feed following on addfeed: %v", err)

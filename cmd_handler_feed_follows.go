@@ -4,18 +4,18 @@ import (
 	"context"
 	"fmt"
 	"time"
+
 	"github.com/google/uuid"
 	"github.com/kaelbroersma/gator/internal/database"
 )
 
-func handleFollowing(s *state, cmd Command) error {
+func handleFollowing(s *state, cmd Command, user database.User) error {
 	ctx := context.Background()
-	user, err := s.db.GetUser(ctx, s.cfg.CurrentUser)
+
+	followedFeeds, err := s.db.GetFeedFollowsForUser(ctx, user.ID)
 	if err != nil {
 		return err
 	}
-
-	followedFeeds, err := s.db.GetFeedFollowsForUser(ctx, user.ID)
 
 	fmt.Println("======================================")
 	fmt.Printf("%v's followed feeds", s.cfg.CurrentUser)
@@ -24,17 +24,12 @@ func handleFollowing(s *state, cmd Command) error {
 		fmt.Println(feed)
 	}
 	fmt.Println("======================================")
-	
+
 	return nil
 }
 
-func handleFollow(s *state, cmd Command) error {
+func handleFollow(s *state, cmd Command, user database.User) error {
 	ctx := context.Background()
-
-	user, err := s.db.GetUser(ctx, s.cfg.CurrentUser)
-	if err != nil {
-		return err
-	}
 
 	if len(cmd.Args) < 1 {
 		return fmt.Errorf("Must call follow with atleast 1 <args>")
@@ -47,11 +42,11 @@ func handleFollow(s *state, cmd Command) error {
 	}
 
 	newRow, err := s.db.CreateFeedFollow(ctx, database.CreateFeedFollowParams{
-		ID: uuid.New(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		UserID: user.ID,
-		FeedID: feedID,
+		UserID:    user.ID,
+		FeedID:    feedID,
 	})
 	if err != nil {
 		return err
@@ -63,5 +58,3 @@ func handleFollow(s *state, cmd Command) error {
 
 	return nil
 }
-
-
