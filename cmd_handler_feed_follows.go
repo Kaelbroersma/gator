@@ -36,7 +36,7 @@ func handleFollow(s *state, cmd Command, user database.User) error {
 	}
 
 	url := cmd.Args[0]
-	feedID, err := s.db.GetFeedByURL(ctx, url)
+	feed, err := s.db.GetFeedByURL(ctx, url)
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func handleFollow(s *state, cmd Command, user database.User) error {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		UserID:    user.ID,
-		FeedID:    feedID,
+		FeedID:    feed.ID,
 	})
 	if err != nil {
 		return err
@@ -55,6 +55,31 @@ func handleFollow(s *state, cmd Command, user database.User) error {
 	fmt.Println()
 	fmt.Printf("Successfully followed feed %v\nFor user %v", newRow.FeedName, newRow.UserName)
 	fmt.Println()
+
+	return nil
+}
+
+func handleUnfollow(s *state, cmd Command, user database.User) error {
+	if len(cmd.Args) < 1 {
+		return fmt.Errorf("please provide a URL to unfollow")
+	}
+
+	url := cmd.Args[0]
+
+	feed, err := s.db.GetFeedByURL(context.Background(), url)
+	if err != nil {
+		return err
+	}
+
+	err = s.db.UnfollowFeed(context.Background(), database.UnfollowFeedParams{
+		UserID: user.ID,
+		FeedID: feed.ID,
+	})
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("\nSuccessfully unfollowed %v\n", url)
 
 	return nil
 }

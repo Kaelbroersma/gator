@@ -6,7 +6,7 @@ VALUES(
 RETURNING *;
 
 -- name: GetFeedByURL :one
-SELECT id
+SELECT *
 FROM feeds
 WHERE url = $1;
 
