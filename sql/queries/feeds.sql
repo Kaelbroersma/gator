@@ -5,6 +5,12 @@ VALUES(
 )
 RETURNING *;
 
+-- name: GetFeedByURL :one
+SELECT id
+FROM feeds
+WHERE url = $1;
+
+
 -- name: ListFeeds :many
 SELECT feeds.name, feeds.url, users.name AS user_name
 FROM feeds
