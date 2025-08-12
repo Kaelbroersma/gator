@@ -18,15 +18,28 @@ G.A.T.O.R lets you:
 
 ## How to use
 
-Just run the app and use any of these commands through the CLI or however you interface with it:
+You will need Postgres and Go installed to run the program.
+
+Install by running 'go install github.com/kaelbroersma/gator'
+
+USAGE : gator <cmd> <..args>
+Some commands have args.. others dont. 
+
+command 'agg' is meant to be running in the background. It is what retrieves the post title, description, url, etc.
+Run CLI in another instance to run browse commands and fetch posts
+
+command list: 
 
 ```bash
-login
-register
-reset
-users
-agg
-addfeed
-feeds
-follow
-following
+login (login as user)
+register (register a user)
+reset (reset users and feeds)
+users (list users)
+agg (start aggregating) <duration> (1s,1m,1h)
+addfeed (add feed to aggregate)
+feeds (list feeds)
+follow (follow a feed)
+unfollow (unfollow a feed)
+following (list feeds you are following)
+browse (browse feeds of logged in user)
+
